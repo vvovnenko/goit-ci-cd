@@ -7,4 +7,3 @@ output "dynamodb_table_name" {
   description = "Назва таблиці DynamoDB для блокування стейтів"
   value       = module.s3_backend.dynamodb_table_name
 }
-
