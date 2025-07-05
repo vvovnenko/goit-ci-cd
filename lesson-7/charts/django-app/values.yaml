@@ -1,19 +1,19 @@
 image:
-  repository: your-registry/your-django-image
+  repository: 731464279148.dkr.ecr.eu-north-1.amazonaws.com/django-app-ecr
   tag: latest
   pullPolicy: IfNotPresent
 
 service:
-  type: ClusterIP
+  type: LoadBalancer
   port: 8000
 
 ingress:
   enabled: false
 
 config:
-	POSTGRES_PORT: 5432
-	POSTGRES_HOST: db
-	POSTGRES_USER: django_user
-	POSTGRES_DB: django_db
-	POSTGRES_PASSWORD: pass9764gd
+  POSTGRES_PORT: 5432
+  POSTGRES_HOST: db
+  POSTGRES_USER: django_user
+  POSTGRES_DB: django_db
+  POSTGRES_PASSWORD: pass9764gd
 
