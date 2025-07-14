@@ -69,29 +69,29 @@ resource "aws_iam_role" "jenkins_kaniko_role" {
   })
 }
 
-# resource "aws_iam_role_policy" "jenkins_ecr_policy" {
-#   name = "${var.cluster_name}-jenkins-kaniko-ecr-policy"
-#   role = aws_iam_role.jenkins_kaniko_role.id
-#
-#   policy = jsonencode({
-#     Version = "2012-10-17",
-#     Statement = [
-#       {
-#         Effect = "Allow",
-#         Action = [
-#           "ecr:GetAuthorizationToken",
-#           "ecr:BatchCheckLayerAvailability",
-#           "ecr:PutImage",
-#           "ecr:InitiateLayerUpload",
-#           "ecr:UploadLayerPart",
-#           "ecr:CompleteLayerUpload",
-#           "ecr:DescribeRepositories"
-#         ],
-#         Resource = "*"
-#       }
-#     ]
-#   })
-# }
+resource "aws_iam_role_policy" "jenkins_ecr_policy" {
+  name = "${var.cluster_name}-jenkins-kaniko-ecr-policy"
+  role = aws_iam_role.jenkins_kaniko_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "ecr:GetAuthorizationToken",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:PutImage",
+          "ecr:InitiateLayerUpload",
+          "ecr:UploadLayerPart",
+          "ecr:CompleteLayerUpload",
+          "ecr:DescribeRepositories"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
 
 resource "helm_release" "jenkins" {
   name             = "jenkins"

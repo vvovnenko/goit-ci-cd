@@ -66,3 +66,8 @@ output "jenkins_namespace" {
   value = module.jenkins.jenkins_namespace
 }
 
+#-------------ARGO CD-----------------
+# output "argo-cd_pass" {
+#   description = "argo-cd pass"
+#   value       = module.argo_cd.admin_password
+# }

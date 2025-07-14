@@ -68,3 +68,9 @@ module "jenkins" {
     kubernetes = kubernetes
   }
 }
+#
+# module "argo_cd" {
+#   source       = "./modules/argo-cd"
+#   namespace    = "argocd"
+#   chart_version = "5.46.4"
+# }
