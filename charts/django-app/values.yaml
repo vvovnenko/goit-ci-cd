@@ -1,6 +1,6 @@
 image:
   repository: 731464279148.dkr.ecr.eu-north-1.amazonaws.com/django-app-ecr
-  tag: v1.0.6
+  tag: v1.0.1
   pullPolicy: IfNotPresent
 
 service:
