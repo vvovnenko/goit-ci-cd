@@ -27,11 +27,31 @@ lesson-7/
 │   │   ├── variables.tf            # Змінні для ECR
 │   │   └── outputs.tf              # Виведення URL репозиторію ECR
 │   │
-│   └── eks/                        # Модуль для EKS
-│       ├── eks.tf                  # Створення EKS кластеру
-│       ├── node.tf                 # Створення Node Group
-│       ├── variables.tf            # Змінні для EKS
-│       └── outputs.tf              # Виведення інформації про EKS
+│   ├── eks/                        # Модуль для EKS
+│   │   ├── eks.tf                  # Створення EKS кластеру
+│   │   ├── node.tf                 # Створення Node Group
+│   │   ├── variables.tf            # Змінні для EKS
+│   │   └── outputs.tf              # Виведення інформації про EKS
+│   │
+│   ├── jenkins/             # Модуль для Helm-установки Jenkins
+│   │   ├── jenkins.tf       # Helm release для Jenkins
+│   │   ├── variables.tf     # Змінні (ресурси, креденшели, values)
+│   │   ├── providers.tf     # Оголошення провайдерів
+│   │   ├── values.yaml      # Конфігурація jenkins
+│   │   └── outputs.tf       # Виводи (URL, пароль адміністратора)
+│   │ 
+│   └── argo_cd/             # ✅ Новий модуль для Helm-установки Argo CD
+│       ├── jenkins.tf       # Helm release для Jenkins
+│       ├── variables.tf     # Змінні (версія чарта, namespace, repo URL тощо)
+│       ├── providers.tf     # Kubernetes+Helm.  переносимо з модуля jenkins
+│       ├── values.yaml      # Кастомна конфігурація Argo CD
+│       ├── outputs.tf       # Виводи (hostname, initial admin password)
+│		└──charts/                  # Helm-чарт для створення app'ів
+│           ├── Chart.yaml
+│	  	    ├── values.yaml          # Список applications, repositories
+│			└── templates/
+│		        ├── application.yaml
+│		        └── repository.yaml
 │
 ├── charts/                         # Каталог з усіма Helm чартами
 │   └── django-app/                 # Чарти для Django
@@ -65,6 +85,21 @@ lesson-7/
 ### `eks`
 - Створює EKS кластер
 
+### `jenkins`
+- Установка Jenkins
+- Забезпечує роботу Jenkins через Kubernetes Agent (Kaniko + Git).
+- Створює pipeline (через django-app/Jenkinsfile), який:
+  - Збирає образ із Dockerfile
+  - Пушить його до ECR
+  - Оновлює тег у charts/django-app/values.yaml
+  - Пушить зміни в lesson-8-9 репозиторій
+
+### `argo_cd`
+- Установка Argo CD
+- Підключення Argo CD до EKS кластеру
+- Налаштуйте Argo CD Application, який стежить за оновленням Helm-чарта charts/django-app/
+- Argo CD автоматично синхроніє зміни у кластері після оновлення Git.
+
 
 ## Опис Helm чарт
 
@@ -86,29 +121,6 @@ terraform apply
 terraform destroy
 ```
 
-**Вхід в AWS ECR (отримання токену логіну)**
-```bash
-aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 731464279148.dkr.ecr.eu-north-1.amazonaws.com
-```
-
-**Білдимо Docker image**
-
-```bash
-docker build -t django-app-ecr ./django-app
-```
-
-де `./django-app` - шлях до директорії з Dockerfile застосунку Django
-
-**Додаємо тег імеджу для пушу в ECR**
-```bash
-docker tag django-app-ecr 731464279148.dkr.ecr.eu-north-1.amazonaws.com/django-app-ecr
-```
-
-**Пушимо в ECR**
-```bash
-docker push 731464279148.dkr.ecr.eu-north-1.amazonaws.com/django-app-ecr
-```
-
 **Додавання EKS кластеру в kubeconfig**
 ```bash
 aws eks update-kubeconfig \
@@ -116,13 +128,43 @@ aws eks update-kubeconfig \
   --name eks-cluster-demo
 ```
 
-**Встановлення Helm**
+**Виведення списку сервісів для отримання EXTERNAL-IP для Jenkins та ArgoCD**
 ```bash
-helm upgrade --install django ./django-app
+kubectl get scv -A
 ```
 
-**Виведення списку сервісів**
-kubectl get scv -A
-
 **Витягуємо пароль ArgoCD**
+```bash
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+```
+
+## Результати
+
+### Jenkins
+Pipeline збірки 
+![alt text](assets/jenkins-1.png)
+
+Збірка образу із Dockerfile та пушення до ECR
+![alt text](assets/jenkins-2.png)
+
+Оновлення тегу та пушення змін в lesson-8-9 репозиторій
+![alt text](assets/jenkins-3.png)
+
+### ArgoCD
+Argo applications
+![alt text](assets/argocd-1.png)
+
+Example app Ci/CD scheme
+![alt text](assets/argocd-2.png)
+
+Synced to v1.0.1
+![alt text](assets/argocd-3.png)
+
+### EKS
+PODs кластера
+![alt text](assets/eks-1.png)
+
+### ECR
+Django app ECR
+![alt text](assets/ecr-1.png)
+
