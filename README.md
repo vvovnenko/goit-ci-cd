@@ -40,6 +40,13 @@ lesson-7/
 │   │   ├── values.yaml      # Конфігурація jenkins
 │   │   └── outputs.tf       # Виводи (URL, пароль адміністратора)
 │   │ 
+│   ├── rds/                 # Модуль для RDS
+│   │   ├── rds.tf           # Створення RDS бази даних  
+│   │   ├── aurora.tf        # Створення aurora кластера бази даних  
+│   │   ├── shared.tf        # Спільні ресурси  
+│   │   ├── variables.tf     # Змінні (ресурси, креденшели, values)
+│   │   └── outputs.tf 
+│   │ 
 │   └── argo_cd/             # ✅ Новий модуль для Helm-установки Argo CD
 │       ├── jenkins.tf       # Helm release для Jenkins
 │       ├── variables.tf     # Змінні (версія чарта, namespace, repo URL тощо)
@@ -99,6 +106,47 @@ lesson-7/
 - Підключення Argo CD до EKS кластеру
 - Налаштуйте Argo CD Application, який стежить за оновленням Helm-чарта charts/django-app/
 - Argo CD автоматично синхроніє зміни у кластері після оновлення Git.
+
+### `rds`
+Модуль дозволяє створювати як **RDS інстанс**, так і **Aurora кластер** з базовими параметрами, такими як security group, DB subnet group, parameter group тощо.
+
+#### Змінні модуля:
+
+| Назва                           | Тип            | Обов’язково      | Опис                                                                         |
+| ------------------------------- | -------------- | ---------------- | ---------------------------------------------------------------------------- |
+| `use_aurora`                    | `bool`         | так              | Визначає, чи створювати Aurora Cluster (`true`) або звичайний RDS (`false`). |
+| `aurora_instance_count`         | `number`       | ні               | Кількість інстансів Aurora. Використовується лише коли `use_aurora = true`.  |
+| `engine_cluster`                | `string`       | так, якщо Aurora | Назва движка для Aurora (напр. `aurora-postgresql`).                         |
+| `engine_version_cluster`        | `string`       | так, якщо Aurora | Версія движка Aurora.                                                        |
+| `parameter_group_family_aurora` | `string`       | так, якщо Aurora | Сімейство параметрів для Aurora.                                             |
+| `engine`                        | `string`       | так, якщо RDS    | Назва движка RDS (напр. `postgres`).                                         |
+| `engine_version`                | `string`       | так, якщо RDS    | Версія RDS.                                                                  |
+| `parameter_group_family_rds`    | `string`       | так, якщо RDS    | Сімейство параметрів для RDS.                                                |
+| `instance_class`                | `string`       | так              | Клас інстансу, напр. `db.t3.medium`.                                         |
+| `allocated_storage`             | `number`       | так              | Розмір сховища для RDS (ігнорується для Aurora).                             |
+| `db_name`                       | `string`       | так              | Назва бази даних.                                                            |
+| `username`                      | `string`       | так              | Ім’я користувача бази.                                                       |
+| `password`                      | `string`       | так              | Пароль користувача.                                                          |
+| `vpc_id`                        | `string`       | так              | ID VPC.                                                                      |
+| `subnet_private_ids`            | `list(string)` | так              | Список приватних сабнетів.                                                   |
+| `subnet_public_ids`             | `list(string)` | так              | Список публічних сабнетів.                                                   |
+| `publicly_accessible`           | `bool`         | ні               | Чи доступна база ззовні.                                                     |
+| `multi_az`                      | `bool`         | ні               | Чи вмикати Multi-AZ режим.                                                   |
+| `backup_retention_period`       | `number`       | ні               | Кількість днів зберігання бекапів.                                           |
+| `parameters`                    | `map(string)`  | ні               | Додаткові параметри DB.                                                      |
+| `tags`                          | `map(string)`  | ні               | Теги ресурсів.                                                               |
+
+####  Як змінити тип бази, движок або клас інстансу
+
+| Що                                  | Як змінити                                             | Приклад                                                                                                                       |
+| ----------------------------------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| **Тип БД**                          | Визначити, чи використовувати Aurora, чи звичайний RDS | `use_aurora = true` → створить Aurora; <br> `use_aurora = false` → створить RDS                                               |
+| **Движок**                          | Вказати назву потрібного движка залежно від типу БД    | Для Aurora: `engine_cluster = "aurora-postgresql"` <br> Для RDS: `engine = "postgres"`                                        |
+| **Версія**                          | Вказати відповідну версію движка                       | Для Aurora: `engine_version_cluster = "15.3"` <br> Для RDS: `engine_version = "17.2"`                                         |
+| **Parameter group family**          | Сімейство параметрів залежно від типу та версії        | Для Aurora: `parameter_group_family_aurora = "aurora-postgresql15"` <br> Для RDS: `parameter_group_family_rds = "postgres17"` |
+| **Клас інстансу**                   | Вказати клас EC2-інстансу для БД                       | `instance_class = "db.t3.medium"` або `instance_class = "db.r5.large"`                                                        |
+| **Multi-AZ**                        | Увімкнути або вимкнути режим з кількома зонами         | `multi_az = true` → підвищена відмовостійкість <br> `multi_az = false` → економ-режим                                         |
+| **Розмір сховища (тільки для RDS)** | Вказати об’єм у GB                                     | `allocated_storage = 100`                                                                                                     |
 
 
 ## Опис Helm чарт
