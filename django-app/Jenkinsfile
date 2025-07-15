@@ -61,7 +61,12 @@ spec:
           withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PAT')]) {
             sh '''
               git clone https://$GIT_USERNAME:$GIT_PAT@github.com/vvovnenko/goit-ci-cd.git
+
+              git config --global --add safe.directory /home/jenkins/agent/workspace/goit-django-docker
+
+              git remote set-url origin https://$GIT_USERNAME:$GIT_PAT@github.com/vvovnenko/goit-ci-cd.git
               git checkout lesson-8
+
               cd charts/django-app
 
               sed -i "s/tag: .*/tag: $IMAGE_TAG/" values.yaml
