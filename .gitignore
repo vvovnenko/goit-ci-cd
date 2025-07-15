@@ -5,7 +5,7 @@
 *.tfstate.backup
 *.tfplan
 crash.log
-terraform.tfvars     # тільки якщо містить секрети
+terraform.tfvars
 override.tf
 override.tf.json
 *_override.tf

@@ -40,8 +40,8 @@ controller:
                   - usernamePassword:
                       scope: GLOBAL
                       id: github-token
-                      username: AndriyDmitriv
-                      password: github_pat_****
+                      username: ${github_username}
+                      password: ${github_token}
                       description: GitHub PAT
       seed-job: |
         jobs:
@@ -51,10 +51,10 @@ controller:
                 scm {
                   git {
                     remote {
-                      url('https://github.com/AndriyDmitriv/infra.git')
+                      url('https://github.com/vvovnenko/goit-ci-cd.git')
                       credentials('github-token')
                     }
-                    branches('*/main')
+                    branches('*/lesson-8')
                   }
                 }
                 steps {
@@ -66,12 +66,13 @@ controller:
                             scm {
                               git {
                                 remote {
-                                  url("https://github.com/AndriyDmitriv/infra.git")
+                                  url("https://github.com/vvovnenko/goit-ci-cd.git")
                                   credentials("github-token")
                                 }
-                                branches("*/main")
+                                branches("*/lesson-8")
                               }
                             }
+                            scriptPath("django-app/Jenkinsfile") // <- вказує шлях до Jenkinsfile
                           }
                         }
                       }

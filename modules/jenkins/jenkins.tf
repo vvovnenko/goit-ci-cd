@@ -93,6 +93,13 @@ resource "aws_iam_role_policy" "jenkins_ecr_policy" {
   })
 }
 
+locals {
+  jenkins_values = templatefile("${path.module}/values.yaml", {
+    github_token    = var.github_token
+    github_username    = var.github_username
+  })
+}
+
 resource "helm_release" "jenkins" {
   name             = "jenkins"
   namespace        = kubernetes_namespace.jenkins.metadata[0].name
@@ -100,9 +107,7 @@ resource "helm_release" "jenkins" {
   chart            = "jenkins"
   version          = "5.8.27"
 
-  values = [
-    file("${path.module}/values.yaml")
-  ]
+  values = [local.jenkins_values]
 
   depends_on = [
     kubernetes_service_account.jenkins_sa

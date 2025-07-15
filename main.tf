@@ -67,6 +67,8 @@ module "jenkins" {
     helm = helm,
     kubernetes = kubernetes
   }
+  github_token = var.github_token
+  github_username = var.github_username
 }
 #
 # module "argo_cd" {

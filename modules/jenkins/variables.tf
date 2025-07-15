@@ -10,3 +10,13 @@ variable "oidc_provider_arn" {
 variable "oidc_provider_url" {
   type        = string
 }
+
+variable "github_token" {
+  description = "GitHub Personal Access Token"
+  type        = string
+}
+
+variable "github_username" {
+  description = "GitHub username"
+  type        = string
+}

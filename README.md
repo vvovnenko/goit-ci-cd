@@ -121,4 +121,5 @@ aws eks update-kubeconfig \
 helm upgrade --install django ./django-app
 ```
 
-
+**Виведення списку сервісів**
+kubectl get scv -A
