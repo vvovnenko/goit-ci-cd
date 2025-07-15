@@ -2,3 +2,9 @@ server:
   service:
     type: LoadBalancer
     port: 443
+
+repositories:
+  - name: example-app
+    url: https://github.com/vvovnenko/goit-ci-cd.git
+    username: ${github_username}
+    password: ${github_token}

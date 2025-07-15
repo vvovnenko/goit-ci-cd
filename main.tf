@@ -69,11 +69,15 @@ module "jenkins" {
   }
   github_token = var.github_token
   github_username = var.github_username
-  github_branch = "lesson-8"
+  github_branch = "lesson-8-9"
 }
-#
-# module "argo_cd" {
-#   source       = "./modules/argo-cd"
-#   namespace    = "argocd"
-#   chart_version = "5.46.4"
-# }
+
+module "argo_cd" {
+  source       = "./modules/argo-cd"
+  namespace    = "argocd"
+  chart_version = "5.46.4"
+  depends_on    = [module.eks]
+
+  github_token = var.github_token
+  github_username = var.github_username
+}

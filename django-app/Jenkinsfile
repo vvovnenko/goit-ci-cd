@@ -65,7 +65,7 @@ spec:
               git config --global --add safe.directory /home/jenkins/agent/workspace/goit-django-docker
 
               git remote set-url origin https://$GIT_USERNAME:$GIT_PAT@github.com/vvovnenko/goit-ci-cd.git
-              git checkout lesson-8
+              git checkout lesson-8-9
 
               cd charts/django-app
 
