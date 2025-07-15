@@ -69,6 +69,7 @@ module "jenkins" {
   }
   github_token = var.github_token
   github_username = var.github_username
+  github_branch = "lesson-8"
 }
 #
 # module "argo_cd" {

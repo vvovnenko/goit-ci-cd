@@ -20,3 +20,8 @@ variable "github_username" {
   description = "GitHub username"
   type        = string
 }
+
+variable "github_branch" {
+  description = "GitHub branch"
+  type        = string
+}

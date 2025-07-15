@@ -97,6 +97,7 @@ locals {
   jenkins_values = templatefile("${path.module}/values.yaml", {
     github_token    = var.github_token
     github_username    = var.github_username
+    github_branch    = var.github_branch
   })
 }
 

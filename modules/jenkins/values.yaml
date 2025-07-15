@@ -54,7 +54,7 @@ controller:
                       url('https://github.com/vvovnenko/goit-ci-cd.git')
                       credentials('github-token')
                     }
-                    branches('*/lesson-8')
+                    branches('*/${github_branch}')
                   }
                 }
                 steps {
@@ -69,7 +69,7 @@ controller:
                                   url("https://github.com/vvovnenko/goit-ci-cd.git")
                                   credentials("github-token")
                                 }
-                                branches("*/lesson-8")
+                                branches("*/${github_branch}")
                               }
                             }
                             scriptPath("django-app/Jenkinsfile") // <- вказує шлях до Jenkinsfile
