@@ -5,7 +5,7 @@ applications:
     source:
       repoURL: https://github.com/vvovnenko/goit-ci-cd.git
       path: charts/django-app
-      targetRevision: lesson-8-9
+      targetRevision: final_project
       helm:
         valueFiles:
           - values.yaml

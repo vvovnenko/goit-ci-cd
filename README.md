@@ -99,7 +99,7 @@ lesson-7/
   - Збирає образ із Dockerfile
   - Пушить його до ECR
   - Оновлює тег у charts/django-app/values.yaml
-  - Пушить зміни в lesson-8-9 репозиторій
+  - Пушить зміни в final_project репозиторій
 
 ### `argo_cd`
 - Установка Argo CD
@@ -195,7 +195,7 @@ Pipeline збірки
 Збірка образу із Dockerfile та пушення до ECR
 ![alt text](assets/jenkins-2.png)
 
-Оновлення тегу та пушення змін в lesson-8-9 репозиторій
+Оновлення тегу та пушення змін в final_project репозиторій
 ![alt text](assets/jenkins-3.png)
 
 ### ArgoCD
