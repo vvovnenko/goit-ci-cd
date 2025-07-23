@@ -148,6 +148,13 @@ lesson-7/
 | **Multi-AZ**                        | Увімкнути або вимкнути режим з кількома зонами         | `multi_az = true` → підвищена відмовостійкість <br> `multi_az = false` → економ-режим                                         |
 | **Розмір сховища (тільки для RDS)** | Вказати об’єм у GB                                     | `allocated_storage = 100`                                                                                                     |
 
+### `prometheus`
+- Розгортає Prometheus в EKS кластері
+
+### `grafana`
+- Розгортає Grafana в EKS кластері
+- Додає розгорнутий в кластері Prometheus в Grafana datasources  
+- Додає Node Exporter Full дашборд в Grafana
 
 ## Опис Helm чарт
 
@@ -176,19 +183,24 @@ aws eks update-kubeconfig \
   --name eks-cluster-demo
 ```
 
-**Виведення списку сервісів для отримання EXTERNAL-IP для Jenkins та ArgoCD**
-```bash
-kubectl get scv -A
-```
 
-**Витягуємо пароль ArgoCD**
-```bash
-kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
-```
-
-## Результати
+## Перевірка роботи
 
 ### Jenkins
+
+Перевірка стану ресурсів
+```bash
+kubectl get all -n jenkins
+```
+![alt text](assets/jenkins-4.png)
+
+Перевірка доступності через EXTERNAL-IP
+
+- login: admin
+- password: admin123
+
+![alt text](assets/jenkins-5.png)
+
 Pipeline збірки 
 ![alt text](assets/jenkins-1.png)
 
@@ -199,20 +211,66 @@ Pipeline збірки
 ![alt text](assets/jenkins-3.png)
 
 ### ArgoCD
+Перевірка стану ресурсів
+```bash
+kubectl get all -n argocd
+```
+![alt text](assets/argocd-4.png)
+
+Перевірка доступності через EXTERNAL-IP
+
+- login: admin
+- password: *run command below*
+  ```bash
+  kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+  ```
+
+![alt text](assets/argocd-5.png)
+
 Argo applications
 ![alt text](assets/argocd-1.png)
 
 Example app Ci/CD scheme
 ![alt text](assets/argocd-2.png)
 
-Synced to v1.0.1
-![alt text](assets/argocd-3.png)
-
-### EKS
-PODs кластера
-![alt text](assets/eks-1.png)
 
 ### ECR
 Django app ECR
 ![alt text](assets/ecr-1.png)
+
+### Monitoring stack
+
+Перевірка стану ресурсів
+```bash
+kubectl get all -n monitoring
+```
+
+![alt text](assets/monitoring-1.png)
+
+Перевірка доступності Grafana через PORT FORWARDING
+```bash
+kubectl port-forward svc/grafana 3000:80 -n monitoring
+```
+![alt text](assets/monitoring-2.png)
+
+- login: admin
+- password: admin123
+
+![alt text](assets/monitoring-3.png)
+
+Стан метрик в Grafana Dashboard
+![alt text](assets/monitoring-4.png)
+
+### Django app
+Перевірка доступності через PORT FORWARDING
+```bash
+kubectl port-forward svc/example-app-django 8000:80 -n default
+```
+
+![alt text](assets/app-1.png)
+
+![alt text](assets/app-2.png)
+
+
+
 
